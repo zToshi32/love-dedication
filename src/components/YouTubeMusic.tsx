@@ -2,15 +2,29 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+interface YTPlayer {
+  playVideo: () => void;
+  pauseVideo: () => void;
+}
+
+interface YTEvent {
+  data: number;
+}
+
 declare global {
   interface Window {
-    YT: any;
+    YT: {
+      Player: new (id: string, config: object) => YTPlayer;
+      PlayerState: {
+        PLAYING: number;
+      };
+    };
     onYouTubeIframeAPIReady: () => void;
   }
 }
 
 export default function YouTubeMusic() {
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<YTPlayer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
@@ -24,16 +38,16 @@ export default function YouTubeMusic() {
       playerRef.current = new window.YT.Player('youtube-player', {
         height: '0',
         width: '0',
-        videoId: '_8vCIeCYZBE', // 🔴 CAMBIAR por el ID de tu video
+        videoId: '_8vCIeCYZBE', // CAMBIAR por el ID de tu video
         playerVars: {
           autoplay: 0,
           controls: 0,
           loop: 1,
-          playlist: '_8vCIeCYZBE' // 🔴 CAMBIAR por el mismo ID
+          playlist: '_8vCIeCYZBE' // CAMBIAR por el mismo ID
         },
         events: {
           onReady: () => setIsReady(true),
-          onStateChange: (event: any) => {
+          onStateChange: (event: YTEvent) => {
             setIsPlaying(event.data === window.YT.PlayerState.PLAYING);
           }
         }
@@ -41,7 +55,9 @@ export default function YouTubeMusic() {
     };
 
     return () => {
-      document.body.removeChild(script);
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
     };
   }, []);
 
