@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import YouTubeMusic from '../components/YouTubeMusic';
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: "Toshi & Naayita 💕",
@@ -80,7 +81,7 @@ export default function RootLayout({
         </div>
         {/* Background Music */}
         <YouTubeMusic  />
-        
+        <Analytics/>
         {/* Main content */}
       </body>
     </html>
